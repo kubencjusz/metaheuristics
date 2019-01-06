@@ -24,6 +24,8 @@ def levi(vec):
     return np.sin(3*pi*x)**2 + (x-1)**2 *(1+np.sin(3*pi*y)**2)+(y-1)**2 *(1+np.sin(2*pi*y)**2)
     
 # visualizing functions
-
+sa = 
+pso = 
+gen = 
 
 # comparing execution time of different algorithms

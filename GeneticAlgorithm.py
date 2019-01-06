@@ -1,24 +1,23 @@
+from datetime import datetime
 import numpy as np
 
-# zmienic funkcje seq i which rev
-
-def intbin(x):
-    # Translate the binary coding to real values numbers
+# two helper functions
+def binToInt(x):
+    # Translate the binary chromosome to real values
     flipped = np.flipud(x)
     idx = np.argwhere(flipped==1).reshape(-1,)
     return (2**idx).sum()
   
-def getCoordinates(population, cel, x_min, x_max):
-    
-    # Transform the binary coding into coordinates
-    coordinates = np.zeros((population.shape[0], 2))
+def getCoords(population, cel, x_min, x_max):
+    # Transform the binary chromosome of size 'cel' into real values of size 2
+    coords = np.zeros((population.shape[0], 2))
     for i in range(population.shape[0]):
-        for j in range(2): # tu wlasciwie powinno byc po wszystkich wymiarach
-            coordinatesTemp = intbin(population[i, (j*cel):((j+1)*cel)])
+        for j in range(2): # test for more dimensions in spare time
+            coordTemp = binToInt(population[i, (j*cel):((j+1)*cel)])
             # ensuring we are not leaving bounding box
-            coordinates[i, j] = ((x_max[j]-x_min[j])/(2**cel))*coordinatesTemp + x_min[j]
+            coords[i, j] = ((x_max[j]-x_min[j])/(2**cel))*coordTemp + x_min[j]
             
-    return(coordinates)
+    return(coords)
 
 
 def geneticAlgorithm(f, x_min=[-20, -20], x_max=[20, 20], cel=50,
@@ -36,7 +35,7 @@ def geneticAlgorithm(f, x_min=[-20, -20], x_max=[20, 20], cel=50,
     - maxIter: number of generations
     '''
   
-    # initializing starting values
+    # initializing history
     results = {'x_opt':[], 'f_opt':[], 'x_hist':[], 'f_mean':[], 
                'f_hist':[], 'time':[]}
 
@@ -47,9 +46,10 @@ def geneticAlgorithm(f, x_min=[-20, -20], x_max=[20, 20], cel=50,
     population = np.zeros((popSize, cel*d))
       
     for i in range(popSize):
-        population[i,] = np.random.uniform(size=cel*d) > .5 # .5 chosen arbitrarily
+        # .5 chosen arbitrarily
+        population[i,] = np.random.uniform(size=cel*d) > .5 
     
-    coordinates = getCoordinates(population, cel, x_min, x_max)
+    coordinates = getCoords(population, cel, x_min, x_max)
       
     # Calculate fittness of individuals
     objFunction = np.zeros((popSize,))
@@ -63,6 +63,8 @@ def geneticAlgorithm(f, x_min=[-20, -20], x_max=[20, 20], cel=50,
     # The generational loop
     finished = False
     currIter = 1
+    time_0 = datetime.now() # to measure speed
+    
     while not finished:
         # Assign the output
         if currIter <= maxIter:
@@ -73,21 +75,22 @@ def geneticAlgorithm(f, x_min=[-20, -20], x_max=[20, 20], cel=50,
             results['f_hist'].append(results['f_opt'])
             results['x_hist'].append(coordinates[np.argmin(objFunction),])
             results['f_mean'].append(np.mean(objFunction))
+            results['time'].append((datetime.now() - time_0).microseconds)
         else:
           finished = True
         
         # Translate binary coding into real values to calculate function value
-        coordinates = getCoordinates(population, cel, x_min, x_max)
+        coordinates = getCoords(population, cel, x_min, x_max)
         
         # Calculate fittness of the individuals
         objFunction = np.zeros((popSize,))
         for i in range(popSize):
             objFunction[i] = f(coordinates[i,])
               
-        rFitt = min(objFunction) / objFunction # Relative Fittness
-        nrFitt = rFitt / sum(rFitt) # Relative Normalized (sum up to 1) Fittness
+        rFitt = min(objFunction) / objFunction # relative fittness
+        nrFitt = rFitt / sum(rFitt) # relative normalized fittness (sum up to 1) 
         
-        # Selection operator (Roulette wheel), analogy to disk
+        # Selection operator (roulette wheel), analogy to disk
         selectedPool = np.zeros((popSize,))
         for i in range(popSize):
             selectedPool[i] = np.argmin(np.random.uniform(size=1) > np.cumsum(nrFitt))
@@ -95,8 +98,8 @@ def geneticAlgorithm(f, x_min=[-20, -20], x_max=[20, 20], cel=50,
         # Crossover operator (for selected pool)
         nextGeneration = np.zeros((popSize, cel*d))
         for i in range(popSize):
-            parentId = int(np.round(np.random.uniform(1, popSize, 1)))
-            cutId = int(np.round(np.random.uniform(1, d*cel-1, 1))) # Do not exceed the matrix sizes
+            parentId = int(np.round(np.random.uniform(1, popSize-1, 1)))
+            cutId = int(np.round(np.random.uniform(1, d*cel-2, 1)))
             # Create offspring
             nextGeneration[i, :cutId] = population[int(selectedPool[i]), :cutId]
             nextGeneration[i, cutId:(d*cel)] = population[int(selectedPool[parentId]), cutId:(d*cel)]
@@ -115,5 +118,3 @@ def geneticAlgorithm(f, x_min=[-20, -20], x_max=[20, 20], cel=50,
 
     return results
   
-  
-# testing

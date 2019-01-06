@@ -18,7 +18,7 @@ def simulatedAnnealing(f, x, alpha=.99, t=10000, delta=.1, maxIter=1000):
     currIter = 1
     finished = False
     x_s = x    
-    time_0 = datetime.now() # to measure speed   
+    time_0 = datetime.now() # to measure speed
     
     while not finished:
         
@@ -47,7 +47,7 @@ def simulatedAnnealing(f, x, alpha=.99, t=10000, delta=.1, maxIter=1000):
             results['x_hist'].append(x_s)
             results['f_hist'].append(f(x_s))
             results['time'].append((datetime.now() - time_0).microseconds)
-            results['temp'].append(t)
+
             results['transProb'].append(A)
         else:
             finished = True
@@ -122,7 +122,7 @@ def update_gif(i):
 
 
 ani = FuncAnimation(fig, update_gif, frames=np.arange(1, len(res['x_hist'])),
-                    interval=10, blit=True)  
+                    interval=100, blit=True)  
 
 
 ani.save('lines.gif', writer='imagemagick')
