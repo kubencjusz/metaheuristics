@@ -52,8 +52,8 @@ def simulatedAnnealing(f, x, alpha=.99, t=10000, delta=.1, maxIter=1000):
         else:
             finished = True
         
-        if currIter % 250 == 0:
-            print(f"f_opt after {currIter} iterations: {results['x_opt']} \n")
+        # if currIter % 250 == 0:
+        #     print(f"f_opt after {currIter} iterations: {results['x_opt']} \n")
         
         currIter += 1
 

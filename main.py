@@ -51,7 +51,7 @@ def easom(vec):
     return -np.cos(x)*np.cos(y)*np.exp(-((x-pi)**2 + (y-pi)**2))
 
 # SET PARAMETERS
-F = himmelblau
+F = easom
 X_MIN = [-20,-20]
 X_MAX = [20,20]
 N_ITER = 1000
@@ -153,5 +153,3 @@ def draw_anim(hist = sa, save_to_disk = False,
 
 
 # drawing execution time
-draw_path(pso)
-pso['f_hist']
