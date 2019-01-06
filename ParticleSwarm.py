@@ -62,7 +62,7 @@ def PSO(f, swarm_size=20, max_iter=200, x_min=[-20,-20], x_max=[20,20],
             swarm_result[m] = f(swarm[m, :])
         
         # updating global best particle in iteration k
-        if min(swarm_result) < f(g_best):
+        if min(swarm_result)[0] < f(g_best):
             g_best = swarm[np.argmin(swarm_result), :]
         
         # saving history
@@ -75,23 +75,4 @@ def PSO(f, swarm_size=20, max_iter=200, x_min=[-20,-20], x_max=[20,20],
         results['time'].append((datetime.now()-pocz_iter).microseconds)
         
     return results
-
-
-# testy
-ub_iter = 1000
-omega = 0.5
-c1 = 1
-c2 = 1
-swarm_size = 20
-maxIter = 100
-x_min = [-20,-20]
-x_max = [20,20]
-
-# Schaffer function
-def myFun(x):
-    return(0.6 + ((np.sin(x[0]**2-x[1]**2))**2-0.5)/((1+0.001*(x[0]**2+x[1]**2))**2))
-
-
-
-pso = PSO(f=myFun, swarm_size=20, max_iter=ub_iter, x_min=x_min, x_max=x_max, c1=1, c2=1, omega=0.5)
 
