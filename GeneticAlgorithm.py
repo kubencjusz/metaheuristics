@@ -86,11 +86,13 @@ def geneticAlgorithm(f, x_min=[-20, -20], x_max=[20, 20], cel=50,
         objFunction = np.zeros((popSize,))
         for i in range(popSize):
             objFunction[i] = f(coordinates[i,])
-              
-        rFitt = np.divide(min(objFunction),  objFunction,
-                          out=np.zeros_like(objFunction), where=objFunction!=0)  # relative fittness
-        nrFitt = rFitt / sum(rFitt) # relative normalized fittness (sum up to 1) 
         
+        np.warnings.filterwarnings('ignore')
+
+        rFitt = np.divide(min(objFunction), objFunction) # relative fittness
+        # relative normalized fittness (sum up to 1) :
+        nrFitt = np.divide(rFitt, sum(rFitt))
+                
         # Selection operator (roulette wheel), analogy to disk
         selectedPool = np.zeros((popSize,))
         for i in range(popSize):
